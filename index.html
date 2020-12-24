@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+	<head>
+		<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}"/>
+		<meta charset="utf-8" />
+		<title>Website parser</title>
+	</head>
+	<body>
+		<div class="container-fluid">
+			<div class="row justify-content-md-center">
+				<div class="h1">
+					Enter Website URL
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					
+				</div>
+				<div class="col">
+					<div  class="form-inline">
+						<div class="form-group col-10">
+							<input type="text" id="main_input" class="form-control col-12" placeholder="https://website.com">
+						</div>
+						<a onclick="javascript: send_data({'which' : 13}); return false;" class="btn btn-primary col-2">Ok</a>
+					</div>
+				</div>
+				<div class="col">
+					
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					
+				</div>
+				<div class="col">
+					<div id="response">
+						
+					</div>
+				</div>
+				<div class="col">
+					
+				</div>
+			</div>
+		</div>
+	</body>
+	<script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			
+			$('#main_input').keyup(send_data);
+		});
+		
+		function send_data(event) {
+			console.log(event);
+			if (event) {
+				if (event.which == "13") {
+					$.ajax({
+						type: "POST",
+						data: {url: $('#main_input').val()},
+						success : function(msg) {
+							$('#response').html('<div>Task #' + msg + '. Please, <a href="?id=' + msg + '">checkout</a> the website process is complete</div>')
+						}
+					})
+				}
+			}
+		}
+	</script>
+</html>
