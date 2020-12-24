@@ -5,6 +5,9 @@ import os, re, subprocess
 
 app = Flask(__name__,  template_folder='.')
 
+server_host = '0.0.0.0'
+server_port = 8888
+
 api = Api(app)
 
 class ApiIndex(Resource):
@@ -95,4 +98,4 @@ def dwnload(filename):
     return send_file(task[2], as_attachment=True, cache_timeout = -1)
     
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=8888)
+    app.run(host=server_host, port=server_port)
