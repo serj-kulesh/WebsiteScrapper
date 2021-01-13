@@ -1,12 +1,20 @@
+from sys import platform as sys_platform
+import os
+import re
+import subprocess
+import sqlite3
 from flask import Flask, render_template, request, send_file
 from flask_restful import reqparse, abort, Api, Resource
-import sqlite3
-import os, re, subprocess
 
+
+dir_sep = '/'
+if sys_platform.startswith('win'):
+    dir_sep = '\\'
+    
 app = Flask(__name__,  template_folder='.')
 
 server_host = '0.0.0.0'
-server_port = 8888
+server_port = 8889
 
 api = Api(app)
 
@@ -26,7 +34,8 @@ class ApiIndex(Resource):
             return {"status": "Website is processing right now"}
         else:
             filename = re.findall('[^\/]+$',task[2])[0]
-            return {"download_link" : "{0}download/{1}" . format(request.host_url, filename)}
+            return {"download_link" : "{0}download/{1}"
+                     . format(request.host_url, filename)}
         
 
     def post(self):
@@ -55,12 +64,15 @@ def index():
             task_id = request.args['id']
             conn = sqlite3.connect('app.db')
             cur = conn.cursor()
-            cur.execute("SELECT * FROM tasks WHERE id = {0}" . format(task_id))
+            cur.execute("SELECT * FROM tasks WHERE id = {0}"
+                         . format(task_id))
             task = cur.fetchone()
             if task[1] == 0:
                 return 'Website is processing right now'
             else:
-                return '<a href="/download/?id={0}">Download archive</a>' . format(task[0])
+                return """
+                            <a href="/download/?id={0}">Download archive</a>
+                        """ . format(task[0])
     
     if request.method == "POST":
         if request.form.get('url') is not None:
@@ -85,13 +97,16 @@ def dwnload(filename):
             task_id = request.args['id']
             conn = sqlite3.connect('app.db')
             cur = conn.cursor()
-            cur.execute("SELECT * FROM tasks WHERE id = {0}" . format(task_id))
+            cur.execute("SELECT * FROM tasks WHERE id = {0}"
+                         . format(task_id))
             task = cur.fetchone()
     if task is None:
         if filename is None:
             return "404"
-        if os.path.isfile(os.path.dirname(os.path.realpath(__file__)) + '/files/' + filename):
-            task = ['','',os.path.dirname(os.path.realpath(__file__)) + '/files/' + filename]
+        if os.path.isfile(os.path.dirname(os.path.realpath(__file__))
+             + dir_sep + 'files' + dir_sep + filename):
+            task = ['','',os.path.dirname(os.path.realpath(__file__))
+                     + dir_sep + 'files' + dir_sep + filename]
     
     if task is None:
         return "404"
